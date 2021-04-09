@@ -20,11 +20,11 @@ The output for the input given in test_input.py is:
 Do you want to buy, fill, remaining, exit):
 "buy"
 
-Output:
-###hot_tea can't be prepared because hot_water not available
-###hot_tea can't be prepared because hot_milk not available
-###hot_coffee is prepared
-###green_tea can't be prepared because hot_water not available
-###green_tea can't be prepared because green_mixture not available
-###black_tea can't be prepared because hot_water not available
+Output:  
+hot_tea can't be prepared because hot_water not available. 
+hot_tea can't be prepared because hot_milk not available. 
+hot_coffee is prepared. 
+green_tea can't be prepared because hot_water not available. 
+green_tea can't be prepared because green_mixture not available. 
+black_tea can't be prepared because hot_water not available. 
 
