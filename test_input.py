@@ -1,4 +1,4 @@
-ip = {
+ip1 = {
   "machine": {
     "outlets": {
       "count_n": 3
