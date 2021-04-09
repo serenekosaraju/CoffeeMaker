@@ -8,9 +8,7 @@
  Output:
  Ginger tea is prepared
  #After a few attempts of buying items, we get a message saying it is not possible to buy some items due to some ingredients not being available
-
-###---------------------New testing cases-----------------------###
-
+---------------------New testing cases-----------------------
 Read input from test_input.py which contains the dictionary containing ingredient initialization as total_items_quantity
 and also contains the multiple requests of different beverages made to the coffee machine
 
@@ -20,11 +18,10 @@ The output for the input given in test_input.py is:
 Do you want to buy, fill, remaining, exit):
 "buy"
 
-Output:  
-hot_tea can't be prepared because hot_water not available. <br />
-hot_tea can't be prepared because hot_milk not available. <br />
-hot_coffee is prepared. <br />
-green_tea can't be prepared because hot_water not available. <br />
-green_tea can't be prepared because green_mixture not available. <br />
-black_tea can't be prepared because hot_water not available. <br />
+Output: <br/>
+hot_ginger_tea is prepared <br />
+hot_coffee is prepared <br />
+green_tea can't be prepared because green_mixture not available <br />
+black_tea cannot be prepared because hot_water is not available <br />
 
+Other functionalities such as fill and remaining and exit also work <br />
