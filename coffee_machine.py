@@ -78,6 +78,7 @@ class CoffeeMachine:
                              "hot_coffee": [10, 0, 0, 0, 1, 50, 10, 10], "hot_milk": [0, 0, 0, 0, 10, 0, 50, 0],
                              "hot_water": [0, 0, 0, 0, 10, 50, 0, 0]}
         for beverage in self.beverages:
+            #Set of beverages tested against pre defined value arrays based on beverages catered by the coffee maker
             if beverage in beverages_catered.keys():
                 self.reduced = beverages_catered[beverage]
                 if self.available_check():  # checks if supplies are available
@@ -85,13 +86,27 @@ class CoffeeMachine:
                     print("{} is prepared".format(beverage))
                 else:
                     print("{} cannot be prepared because {} is not available".format(beverage, self.not_available))
+            #Set of new beverages unknown to the coffee maker
             else:
                 ingredients_available = ["coffee_syrup", "tea_leaves_syrup", "ginger_syrup", "cardamom_syrup", "cups",
                                          "hot_water", "hot_milk", "sugar_syrup"]
                 ingredients_required_for_beverage = self.beverages[beverage].keys()
-                for ingredient in ingredients_required_for_beverage:
-                    if ingredient not in ingredients_available:
-                        print("{} can't be prepared because {} not available".format(beverage, ingredient))
+                if set(ingredients_required_for_beverage).issubset(ingredients_available):
+                    for index, ingredient in enumerate(ingredients_available):
+                        if ingredient in ingredients_required_for_beverage:
+                            self.reduced[index] = self.beverages[beverage][ingredient]
+                        else:
+                            self.reduced[index] = 0
+                    if self.available_check():  # checks if supplies are available
+                        self.deduct_supplies()  # if it is, then it deducts
+                        print("{} is prepared".format(beverage))
+                    else:
+                        print("{} cannot be prepared because {} is not available".format(beverage, self.not_available))
+                else:
+                    for ingredient in self.beverages[beverage].keys():
+                        if ingredient not in ingredients_available:
+                            print("{} can't be prepared because {} not available".format(beverage, ingredient))
+
         self.return_to_menu()
 
     def thread_task(self, lock):
