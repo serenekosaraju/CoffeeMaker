@@ -11,6 +11,7 @@ class CoffeeMachine:
         self.cups = cups
         self.water = water
         self.milk = milk
+        self.beverages = ip1["machine"]["beverages"]
         self.not_available = ""
         self.choice = 0
         self.reduced = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -73,49 +74,24 @@ class CoffeeMachine:
         self.cups -= self.reduced[4]
 
     def buy(self):
-        self.choice = input("What do you want to buy? 1 - ginger tea, 2 - cardamom tea, 3 - coffee, 4 - hot milk, 5 - hot water, 6 - back\n")
-        if self.choice == "1":
-            self.reduced = [0, 10, 5, 0, 1, 50, 10, 10]
-            if self.available_check():  # checks if supplies are available
-                self.deduct_supplies()  # if it is, then it deducts
-                print("ginger tea is prepared")
+        beverages_catered = {"ginger_tea": [0, 10, 5, 0, 1, 50, 10, 10], "cardamom_tea": [0, 10, 0, 5, 1, 50, 10, 10],
+                             "hot_coffee": [10, 0, 0, 0, 1, 50, 10, 10], "hot_milk": [0, 0, 0, 0, 10, 0, 50, 0],
+                             "hot_water": [0, 0, 0, 0, 10, 50, 0, 0]}
+        for beverage in self.beverages:
+            if beverage in beverages_catered.keys():
+                self.reduced = beverages_catered[beverage]
+                if self.available_check():  # checks if supplies are available
+                    self.deduct_supplies()  # if it is, then it deducts
+                    print("{} is prepared".format(beverage))
+                else:
+                    print("{} cannot be prepared because {} is not available".format(beverage, self.not_available))
             else:
-                print("ginger tea cannot be prepared because {} is not available".format(self.not_available))
-
-        elif self.choice == "2":
-            self.reduced = [0, 10, 0, 5, 1, 50, 10, 10]
-            if self.available_check():
-                self.deduct_supplies()
-                print("cardamom tea is prepared")
-            else:
-                print("cardamom tea cannot be prepared because {} is not available".format(self.not_available))
-
-        elif self.choice == "3":
-            self.reduced = [10, 0, 0, 0, 1, 50, 10, 10]
-            if self.available_check():
-                self.deduct_supplies()
-                print("hot coffee is prepared")
-            else:
-                print("hot coffee cannot be prepared because {} is not available".format(self.not_available))
-
-        elif self.choice == "4":
-            self.reduced = [0, 0, 0, 0, 10, 0, 50, 0]
-            if self.available_check():
-                self.deduct_supplies()
-                print("hot milk is prepared")
-            else:
-                print("hot milk cannot be prepared because {} is not available".format(self.not_available))
-
-        elif self.choice == "5":
-            self.reduced = [0, 0, 0, 0, 10, 50, 0, 0]
-            if self.available_check():
-                self.deduct_supplies()
-                print("hot water is prepared")
-            else:
-                print("hot water can't be provided because {} is not available".format(self.not_available))
-        elif self.choice == "back":  # if the user changed his mind
-            self.return_to_menu()
-
+                ingredients_available = ["coffee_syrup", "tea_leaves_syrup", "ginger_syrup", "cardamom_syrup", "cups",
+                                         "water", "milk", "sugar_syrup"]
+                ingredients_required_for_beverage = self.beverages[beverage].keys()
+                for ingredient in ingredients_required_for_beverage:
+                    if ingredient not in ingredients_available:
+                        print("{} can't be prepared because {} not available".format(beverage, ingredient))
         self.return_to_menu()
 
     def thread_task(self, lock):
@@ -123,9 +99,10 @@ class CoffeeMachine:
         task for thread
         calls buy function 3 times.
         """
-        for i in range(3):
+        t = []
+        for i in range(len(self.beverages)):
             lock.acquire()
-            self.buy()
+            t[i] = threading.Thread(target=self.buy())
             lock.release()
 
     def main_task(self):
@@ -135,7 +112,7 @@ class CoffeeMachine:
 
         # creating threads
         t = []
-        for thread in range(3):
+        for thread in range(len(self.beverages)):
             t[thread] = threading.Thread(target=self.thread_task, args=(lock,))
             t[thread].start()
             t[thread].join()
@@ -166,6 +143,9 @@ class CoffeeMachine:
 
 if __name__ == "__main__":
     from initialization_of_ingredients_for_further_testing import ip
+    from test_input import ip1
+
+    num_outlets_1 = int(ip1["machine"]["outlets"]["count_n"])
     num_outlets = int(ip["machine"]["outlets"]["count_n"])
     total_items_quantity = ip["machine"]["total_items_quantity"]
     ginger_syrup = total_items_quantity['ginger_syrup']
@@ -176,5 +156,6 @@ if __name__ == "__main__":
     hot_water = total_items_quantity['hot_water']
     hot_milk = total_items_quantity['hot_milk']
     sugar_syrup = total_items_quantity['sugar_syrup']
-    cf_init = CoffeeMachine(coffee_syrup, tea_leaves_syrup, ginger_syrup, cardamom_syrup, num_cups, hot_water, hot_milk, sugar_syrup)
+    cf_init = CoffeeMachine(coffee_syrup, tea_leaves_syrup, ginger_syrup, cardamom_syrup, num_cups, hot_water, hot_milk,
+                            sugar_syrup)
     cf_init.main_task()
