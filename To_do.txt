@@ -1,0 +1,1 @@
+Test working with beverages as a multithreaded input
