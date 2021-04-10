@@ -2,7 +2,8 @@ import threading
 
 
 class CoffeeMachine:
-    def __init__(self, coffee_syrup, tea_leaves_syrup, ginger_syrup, cardamom_syrup, cups, water, milk, sugar_syrup):
+    def __init__(self, coffee_syrup, tea_leaves_syrup, ginger_syrup, cardamom_syrup, cups, water, milk, sugar_syrup,
+                 beverages):
         self.coffee_syrup = coffee_syrup
         self.tea_leaves_syrup = tea_leaves_syrup
         self.cardamom_syrup = cardamom_syrup
@@ -11,7 +12,7 @@ class CoffeeMachine:
         self.cups = cups
         self.hot_water = water
         self.hot_milk = milk
-        self.beverages = ip1["machine"]["beverages"]
+        self.beverages = beverages
         self.not_available = ""
         self.choice = 0
         self.reduced = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -27,7 +28,7 @@ class CoffeeMachine:
         self.action = input("Do you want to buy, fill, remaining, exit):\n")
         # possible choices to perform in the coffee machine
         if self.action == "buy":
-            self.buy()
+            self.main_task()
         elif self.action == "fill":
             self.fill()
         elif self.action == "exit":
@@ -57,7 +58,6 @@ class CoffeeMachine:
             self.not_available = "hot_milk"
         elif self.sugar_syrup - self.reduced[7] < 0:
             self.not_available = "sugar_syrup"
-
         if self.not_available != "":  # if something was detected to be below zero after deduction
             return False
         else:  # if everything is enough to make the coffee
@@ -107,18 +107,16 @@ class CoffeeMachine:
                         if ingredient not in ingredients_available:
                             print("{} can't be prepared because {} not available".format(beverage, ingredient))
 
-        self.return_to_menu()
+        self.start()
 
     def thread_task(self, lock):
         """
         task for thread
         calls buy function n times.
         """
-        t = []
-        for i in range(len(self.beverages)):
-            lock.acquire()
-            t[i] = threading.Thread(target=self.buy())
-            lock.release()
+        lock.acquire()
+        thread = threading.Thread(target=self.buy())
+        lock.release()
 
     def main_task(self):
 
@@ -126,11 +124,10 @@ class CoffeeMachine:
         lock = threading.Lock()
 
         # creating threads
-        t = []
         for thread in range(len(self.beverages)):
-            t[thread] = threading.Thread(target=self.thread_task, args=(lock,))
-            t[thread].start()
-            t[thread].join()
+            t = threading.Thread(target=self.thread_task, args=(lock,))
+            t.start()
+            t.join()
 
     def fill(self):  # for adding supplies to the machine
         self.hot_water += int(input("Write how many ml of water do you want to add:\n"))
@@ -157,10 +154,9 @@ class CoffeeMachine:
 
 
 if __name__ == "__main__":
-    from initialization_of_ingredients_for_further_testing import ip
-    from test_input import ip1
+    from test_input import ip
 
-    num_outlets_1 = int(ip1["machine"]["outlets"]["count_n"])
+    num_outlets_1 = int(ip["machine"]["outlets"]["count_n"])
     num_outlets = int(ip["machine"]["outlets"]["count_n"])
     total_items_quantity = ip["machine"]["total_items_quantity"]
     ginger_syrup = total_items_quantity['ginger_syrup']
@@ -171,6 +167,8 @@ if __name__ == "__main__":
     hot_water = total_items_quantity['hot_water']
     hot_milk = total_items_quantity['hot_milk']
     sugar_syrup = total_items_quantity['sugar_syrup']
+    beverages = ip["machine"]["beverages"]
     cf_init = CoffeeMachine(coffee_syrup, tea_leaves_syrup, ginger_syrup, cardamom_syrup, num_cups, hot_water, hot_milk,
-                            sugar_syrup)
+                            sugar_syrup, beverages)
     cf_init.main_task()
+
