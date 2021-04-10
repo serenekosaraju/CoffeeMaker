@@ -1,4 +1,4 @@
-ip1 = {
+ip = {
   "machine": {
     "outlets": {
       "count_n": 3
@@ -14,7 +14,7 @@ ip1 = {
       "num_cups": 100
     },
     "beverages": {
-      "hot_tea": {
+      "hot_ginger_tea": {
         "hot_water": 200,
         "hot_milk": 100,
         "ginger_syrup": 10,
